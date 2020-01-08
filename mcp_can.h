@@ -51,6 +51,11 @@
 
 #define MAX_CHAR_IN_MESSAGE 8
 
+// if print debug information
+#ifndef DEBUG_EN
+#define DEBUG_EN        1
+#endif
+
 class MCP_CAN
 {
     private:
@@ -138,6 +143,7 @@ public:
     byte readMsgBufID(unsigned long *ID, byte *len, byte *buf);     // read buf with object ID
     byte checkReceive(void);                                        // if something received
     byte checkError(void);                                          // if something error
+    byte getError(void);                                            // if something error
     unsigned long getCanId(void);                                   // get can id when receive
     byte isRemoteRequest(void);                                     // get RR flag when receive
     byte isExtendedFrame(void);                                     // did we recieve 29bit frame?
