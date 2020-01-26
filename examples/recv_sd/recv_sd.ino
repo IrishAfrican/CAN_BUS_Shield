@@ -7,13 +7,6 @@
 #include "mcp_can.h"
 #include <SD.h>
 
-/*SAMD core*/
-#ifdef ARDUINO_SAMD_VARIANT_COMPLIANCE
-  #define SERIAL SerialUSB
-#else
-  #define SERIAL Serial
-#endif
-
 File myFile;
 
 // the cs pin of the version after v1.1 is default to D9
@@ -30,23 +23,23 @@ char str[20];
 
 void setup()
 {
-    SERIAL.begin(115200);
+    Serial.begin(115200);
 
     while (CAN_OK != CAN.begin(CAN_500KBPS))              // init can bus : baudrate = 500k
     {
-        SERIAL.println("CAN BUS Shield init fail");
-        SERIAL.println("Init CAN BUS Shield again");
+        Serial.println("CAN BUS Shield init fail");
+        Serial.println("Init CAN BUS Shield again");
         delay(100);
     }
-    SERIAL.println("CAN BUS Shield init ok!");
+    Serial.println("CAN BUS Shield init ok!");
 
     attachInterrupt(0, MCP2515_ISR, FALLING); // start interrupt
     
     if (!SD.begin(4)) {
-        SERIAL.println("SD initialization failed!");
+        Serial.println("SD initialization failed!");
         while(1);
     }
-    SERIAL.println("SD initialization done.");
+    Serial.println("SD initialization done.");
 }
 
 void MCP2515_ISR()
@@ -73,20 +66,20 @@ void loop()
             // read data,  len: data length, buf: data buf
             CAN.readMsgBufID(&id, &len, buf);
   
-            SERIAL.print(id);
-            SERIAL.print(",");
+            Serial.print(id);
+            Serial.print(",");
             myFile.print(id);
             myFile.print(",");
             
             for(int i = 0; i<len; i++)
             {
-                SERIAL.print(buf[i]);
-                SERIAL.print(",");
+                Serial.print(buf[i]);
+                Serial.print(",");
                 
                 myFile.print(buf[i]);
                 myFile.print(",");
             }
-            SERIAL.println();
+            Serial.println();
             myFile.println();
         }
         

@@ -8,13 +8,6 @@
 #include <avr/sleep.h>
 #include <avr/wdt.h>
 
-/*SAMD core*/
-#ifdef ARDUINO_SAMD_VARIANT_COMPLIANCE
-  #define SERIAL SerialUSB
-#else
-  #define SERIAL Serial
-#endif
-
 // the cs pin of the version after v1.1 is default to D9
 // v0.9b and v1.0 is default D10
 const int SPI_CS_PIN = 9;
@@ -64,15 +57,15 @@ void sleepMCU()
 
 void setup()
 {
-    SERIAL.begin(115200);
+    Serial.begin(115200);
 
     while (CAN_OK != CAN.begin(CAN_500KBPS, MCP_16MHz))      // init can bus : baudrate = 500k
     {
-        SERIAL.println("CAN BUS Shield init fail");
-        SERIAL.println(" Init CAN BUS Shield again");
+        Serial.println("CAN BUS Shield init fail");
+        Serial.println(" Init CAN BUS Shield again");
         delay(100);
     }
-    SERIAL.println("CAN BUS Shield init ok!");
+    Serial.println("CAN BUS Shield init ok!");
 
     CAN.setSleepWakeup(0);                                  // the MCP2515 will NOT wake up on incoming messages,
                                                             // making it a 'send only' node
@@ -92,7 +85,7 @@ unsigned char stmp[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 void loop()
 {   
-    SERIAL.println("Sending message");
+    Serial.println("Sending message");
 
     CAN.sendMsgBuf(0x00, 0, 0, NULL);     // Send empty wakeup message
 
@@ -117,8 +110,8 @@ void loop()
     
 
     // sleep
-    SERIAL.println("Sleep");
-    SERIAL.flush();
+    Serial.println("Sleep");
+    Serial.flush();
     
     // Put MCP2515 into sleep mode
     CAN.sleep();

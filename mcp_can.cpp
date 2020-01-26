@@ -728,11 +728,18 @@ byte MCP_CAN::mcp2515_init(const byte canSpeed, const byte clock)
                              MCP_RXB_RX_ANY);
 #else
       // enable both receive-buffers to receive messages with std. and ext. identifiers and enable rollover
+      // mcp2515_modifyRegister(MCP_RXB0CTRL,
+      //                        MCP_RXB_RX_MASK | MCP_RXB_BUKT_MASK,
+      //                        MCP_RXB_RX_STDEXT | MCP_RXB_BUKT_MASK);
+      // mcp2515_modifyRegister(MCP_RXB1CTRL, MCP_RXB_RX_MASK,
+      //                        MCP_RXB_RX_STDEXT);
+
+      // enable both receive-buffers to receive messages with std. identifiers and enable rollover
       mcp2515_modifyRegister(MCP_RXB0CTRL,
                              MCP_RXB_RX_MASK | MCP_RXB_BUKT_MASK,
-                             MCP_RXB_RX_STDEXT | MCP_RXB_BUKT_MASK);
+                             MCP_RXB_RX_STD | MCP_RXB_BUKT_MASK);
       mcp2515_modifyRegister(MCP_RXB1CTRL, MCP_RXB_RX_MASK,
-                             MCP_RXB_RX_STDEXT);
+                             MCP_RXB_RX_STD);
 #endif
       // enter normal mode
       res = setMode(MODE_NORMAL);
@@ -1363,6 +1370,11 @@ byte MCP_CAN::checkReceive(void)
 byte MCP_CAN::checkError(void)
 {
     byte eflg = mcp2515_readRegister(MCP_EFLG);
+
+    // reset error if receive buffer overflow
+    if (eflg & (MCP_EFLG_RX0OVR|MCP_EFLG_RX1OVR))
+		  mcp2515_setRegister(MCP_EFLG, 0);
+    
     return ((eflg & MCP_EFLG_ERRORMASK) ? CAN_CTRLERROR : CAN_OK);
 }
 

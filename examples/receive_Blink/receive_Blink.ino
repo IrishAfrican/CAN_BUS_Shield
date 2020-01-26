@@ -5,13 +5,6 @@
 #include <SPI.h>
 #include "mcp_can.h"
 
-/*SAMD core*/
-#ifdef ARDUINO_SAMD_VARIANT_COMPLIANCE
-  #define SERIAL SerialUSB
-#else
-  #define SERIAL Serial
-#endif
-
 // the cs pin of the version after v1.1 is default to D9
 // v0.9b and v1.0 is default D10
 const int SPI_CS_PIN = 9;
@@ -22,16 +15,16 @@ MCP_CAN CAN(SPI_CS_PIN);                                    // Set CS pin
 
 void setup()
 {
-    SERIAL.begin(115200);
+    Serial.begin(115200);
     pinMode(LED,OUTPUT);
 
     while (CAN_OK != CAN.begin(CAN_500KBPS))              // init can bus : baudrate = 500k
     {
-        SERIAL.println("CAN BUS Shield init fail");
-        SERIAL.println("Init CAN BUS Shield again");
+        Serial.println("CAN BUS Shield init fail");
+        Serial.println("Init CAN BUS Shield again");
         delay(100);
     }
-    SERIAL.println("CAN BUS Shield init ok!");
+    Serial.println("CAN BUS Shield init ok!");
 }
 
 
@@ -46,14 +39,14 @@ void loop()
 
         unsigned long canId = CAN.getCanId();
 
-        SERIAL.println("-----------------------------");
-        SERIAL.println("get data from ID: 0x");
-        SERIAL.println(canId, HEX);
+        Serial.println("-----------------------------");
+        Serial.println("get data from ID: 0x");
+        Serial.println(canId, HEX);
 
         for(int i = 0; i<len; i++)    // print the data
         {
-            SERIAL.print(buf[i]);
-            SERIAL.print("\t");
+            Serial.print(buf[i]);
+            Serial.print("\t");
             if(ledON && i==0)
             {
 
@@ -68,7 +61,7 @@ void loop()
                 ledON = 1;
             }
         }
-        SERIAL.println();
+        Serial.println();
     }
 }
 

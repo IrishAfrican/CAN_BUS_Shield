@@ -5,17 +5,9 @@
 #include <SPI.h>
 #include "mcp_can.h"
 
-/*SAMD core*/
-#ifdef ARDUINO_SAMD_VARIANT_COMPLIANCE
-  #define SERIAL SerialUSB
-#else
-  #define SERIAL Serial
-#endif
-
 // the cs pin of the version after v1.1 is default to D9
 // v0.9b and v1.0 is default D10
 const int SPI_CS_PIN = 9;
-const int CAN_INT_PIN = 2;
 
 MCP_CAN CAN(SPI_CS_PIN);                                    // Set CS pin
 
@@ -27,19 +19,17 @@ char str[20];
 
 void setup()
 {
-    SERIAL.begin(115200);
-    while (!SERIAL) {
-      ; // wait for serial port to connect. Needed for native USB port only
-    }
+    Serial.begin(115200);
+
     while (CAN_OK != CAN.begin(CAN_500KBPS))              // init can bus : baudrate = 500k
     {
-        SERIAL.println("CAN BUS Shield init fail");
-        SERIAL.println(" Init CAN BUS Shield again");
+        Serial.println("CAN BUS Shield init fail");
+        Serial.println(" Init CAN BUS Shield again");
         delay(100);
     }
-    SERIAL.println("CAN BUS Shield init ok!");
+    Serial.println("CAN BUS Shield init ok!");
 
-    attachInterrupt(digitalPinToInterrupt(CAN_INT_PIN), MCP2515_ISR, FALLING); // start interrupt
+    attachInterrupt(0, MCP2515_ISR, FALLING); // start interrupt
 }
 
 void MCP2515_ISR()
@@ -66,9 +56,9 @@ void loop()
             // print the data
             for(int i = 0; i<len; i++)
             {
-                SERIAL.print(buf[i]);SERIAL.print("\t");
+                Serial.print(buf[i]);Serial.print("\t");
             }
-            SERIAL.println();
+            Serial.println();
         }
     }
 }
